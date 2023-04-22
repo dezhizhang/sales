@@ -1,0 +1,51 @@
+@import (reference) '~antd/es/style/themes/index';
+
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+  background: @layout-body-background;
+  .content {
+    position: absolute;
+    width: 450px;
+    padding: 32px 0;
+    background: #fff;
+    border-radius: 8px;
+    .title {
+      text-align: center;
+    }
+  }
+}
+
+@media (min-width: @screen-md-min) {
+  .container {
+    background-image: url('https://cdn3-banquan.ituchong.com/weili/image/ml/526478585853378569.webp');
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
+
+  .content {
+    width: 450px;
+    min-height: 400px;
+    padding: 32px 0 24px;
+    background: #fff;
+    border-radius: 8px;
+  }
+}
+
+.icon {
+  margin-left: 8px;
+  color: rgba(0, 0, 0, 0.2);
+  font-size: 24px;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &:hover {
+    color: @primary-color;
+  }
+}
