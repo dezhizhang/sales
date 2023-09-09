@@ -5,7 +5,7 @@
  * :copyright: (c) 2022, Tungee
  * :date created: 2022-11-10 12:30:33
  * :last editor: 张德志
- * :date last edited: 2023-09-09 15:21:46
+ * :date last edited: 2023-09-09 15:38:49
  */
 import styles from './index.less';
 import dayjs from 'dayjs';
@@ -60,6 +60,8 @@ const Manager: React.FC = () => {
       fetchManagerList(filter);
     }
   };
+
+  const handlePageChange = (current: number, pageSize: number) => {};
 
   const columns: ColumnsType<Managers.DataType> = [
     {
@@ -196,6 +198,7 @@ const Manager: React.FC = () => {
           columns={columns}
           pagination={{
             ...pagination,
+            onChange: handlePageChange,
           }}
         />
       </div>
