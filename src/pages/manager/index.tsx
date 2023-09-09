@@ -5,7 +5,7 @@
  * :copyright: (c) 2022, Tungee
  * :date created: 2022-11-10 12:30:33
  * :last editor: 张德志
- * :date last edited: 2023-09-09 15:07:36
+ * :date last edited: 2023-09-09 15:21:46
  */
 import styles from './index.less';
 import dayjs from 'dayjs';
@@ -18,6 +18,8 @@ import { OPERATION_TYPE, STATUS_TYPE } from './constants';
 import { SEX_MAP } from './constants';
 import UserDrawer from './components/UserDrawer';
 import FilterTable from './components/FilterTable';
+import { DEFAULT_PAGINATION } from '@/constants';
+import type { TablePaginationConfig } from 'antd/es/table/Table';
 import React, { useState, useEffect, useRef } from 'react';
 
 const Manager: React.FC = () => {
@@ -27,9 +29,9 @@ const Manager: React.FC = () => {
     phone: undefined,
     email: undefined,
   });
-  const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [dataSource, setDataSource] = useState<Managers.DataType[]>();
+  const [pagination, setPagination] = useState<TablePaginationConfig>(DEFAULT_PAGINATION);
 
   const render = (text: string) => {
     return <span>{text || empty()}</span>;
@@ -39,9 +41,15 @@ const Manager: React.FC = () => {
     setLoading(true);
     const res = await getManagerList(params);
     if (res?.code === 200) {
+      const { total, data } = res || {};
       setLoading(false);
-      setTotal(res?.total);
-      setDataSource(res?.data);
+      setPagination((old) => {
+        return {
+          ...old,
+          total,
+        };
+      });
+      setDataSource(data);
     }
   };
 
@@ -143,16 +151,6 @@ const Manager: React.FC = () => {
     },
   ];
 
-  // const fetchManagerList = async (params: Managers.DataType) => {
-  //   setLoading(true);
-  //   const res = await getManagerList(params);
-  //   console.log('res', res);
-  //   if (res?.code === 200) {
-  //     setLoading(false);
-  //     setDataSource(res?.data);
-  //   }
-  // };
-
   const handleSuccess = () => {
     fetchManagerList(filter);
   };
@@ -185,14 +183,21 @@ const Manager: React.FC = () => {
       <div className={styles.content}>
         <div className={styles.title}>
           <div>
-            共查询到&nbsp;<span style={{ color: 'red' }}>{total}</span>&nbsp;个用户
+            共查询到&nbsp;<span style={{ color: 'red' }}>{pagination?.total}</span>&nbsp;个用户
           </div>
           <Button type="primary" onClick={() => (ref.current as any).show(OPERATION_TYPE.ADD)}>
             添加会员
           </Button>
         </div>
 
-        <Table loading={loading} dataSource={dataSource} columns={columns} />
+        <Table
+          loading={loading}
+          dataSource={dataSource}
+          columns={columns}
+          pagination={{
+            ...pagination,
+          }}
+        />
       </div>
       <UserDrawer
         //@ts-ignore
