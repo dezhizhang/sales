@@ -1,11 +1,11 @@
 /*
  * :file description:
- * :name: /xiaozhicloud-pc/src/pages/manager/index.tsx
+ * :name: /sales/src/pages/manager/index.tsx
  * :author: 张德志
  * :copyright: (c) 2022, Tungee
  * :date created: 2022-11-10 12:30:33
  * :last editor: 张德志
- * :date last edited: 2022-11-19 08:06:27
+ * :date last edited: 2023-09-09 15:07:36
  */
 import styles from './index.less';
 import dayjs from 'dayjs';
@@ -38,7 +38,7 @@ const Manager: React.FC = () => {
   const fetchManagerList = async (params: Managers.DataType) => {
     setLoading(true);
     const res = await getManagerList(params);
-    if (res?.success) {
+    if (res?.code === 200) {
       setLoading(false);
       setTotal(res?.total);
       setDataSource(res?.data);
@@ -56,8 +56,8 @@ const Manager: React.FC = () => {
   const columns: ColumnsType<Managers.DataType> = [
     {
       title: '用户名',
-      dataIndex: 'username',
-      key: 'username',
+      dataIndex: 'name',
+      key: 'name',
       render,
     },
     {
@@ -68,8 +68,8 @@ const Manager: React.FC = () => {
     },
     {
       title: '姓别',
-      dataIndex: 'sex',
-      key: 'sex',
+      dataIndex: 'gender',
+      key: 'gender',
       render: (text: number) => {
         const lanel = SEX_MAP.find((item) => item.value == text)?.label;
         return <span>{lanel || empty()}</span>;
