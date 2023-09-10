@@ -5,7 +5,7 @@
  * :copyright: (c) 2022, Tungee
  * :date created: 2022-11-10 12:30:33
  * :last editor: 张德志
- * :date last edited: 2023-09-09 15:38:49
+ * :date last edited: 2023-09-10 22:46:52
  */
 import styles from './index.less';
 import dayjs from 'dayjs';
@@ -18,7 +18,7 @@ import { OPERATION_TYPE, STATUS_TYPE } from './constants';
 import { SEX_MAP } from './constants';
 import UserDrawer from './components/UserDrawer';
 import FilterTable from './components/FilterTable';
-import { DEFAULT_PAGINATION } from '@/constants';
+import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE, DEFAULT_PAGINATION } from '@/constants';
 import type { TablePaginationConfig } from 'antd/es/table/Table';
 import React, { useState, useEffect, useRef } from 'react';
 
@@ -37,7 +37,7 @@ const Manager: React.FC = () => {
     return <span>{text || empty()}</span>;
   };
 
-  const fetchManagerList = async (params: Managers.DataType) => {
+  const fetchManagerList = async (params: Managers.RequestType) => {
     setLoading(true);
     const res = await getManagerList(params);
     if (res?.code === 200) {
@@ -57,11 +57,29 @@ const Manager: React.FC = () => {
     const res = await deleteManager({ id });
     if (res.success) {
       message.success('删除成功');
-      fetchManagerList(filter);
+      fetchMiddleManagerList(DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE, filter);
+      // fetchManagerList(filter);
     }
   };
 
-  const handlePageChange = (current: number, pageSize: number) => {};
+  const fetchMiddleManagerList = (
+    pageIndex: number = DEFAULT_PAGE_INDEX,
+    pageSize: number = DEFAULT_PAGE_SIZE,
+    filterParams: any,
+  ) => {
+    setPagination((old) => {
+      return { ...old, current: pageSize };
+    });
+    fetchManagerList({ pageIndex: pageIndex, pageSize: pageSize, filter: filterParams });
+  };
+
+  const handlePageChange = (current: number, pageSize: number) => {
+    if (pageSize !== pagination.pageSize) {
+      fetchMiddleManagerList(DEFAULT_PAGE_INDEX, pageSize, filter);
+      return;
+    }
+    fetchMiddleManagerList(current, pageSize, filter);
+  };
 
   const columns: ColumnsType<Managers.DataType> = [
     {
