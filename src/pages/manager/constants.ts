@@ -1,11 +1,11 @@
 /*
  * :file description:
- * :name: /xiaozhicloud-pc/src/pages/manager/constants.ts
+ * :name: /sales/src/pages/manager/constants.ts
  * :author: 张德志
  * :copyright: (c) 2022, Tungee
  * :date created: 2022-11-18 22:55:29
  * :last editor: 张德志
- * :date last edited: 2022-11-18 22:57:04
+ * :date last edited: 2023-09-12 22:38:01
  */
 
 export const STATUS_TYPE = [
@@ -37,6 +37,17 @@ export const SEX_MAP = [
   },
   {
     label: '女',
+    value: 2,
+  },
+];
+
+export const ROLE_LIST = [
+  {
+    label: '普通用户',
+    value: 1,
+  },
+  {
+    label: '超级管理员',
     value: 2,
   },
 ];

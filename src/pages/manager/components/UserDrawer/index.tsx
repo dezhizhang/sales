@@ -1,11 +1,11 @@
 /*
  * :file description:
- * :name: /xiaozhicloud-pc/src/pages/manager/components/UserDrawer/index.tsx
+ * :name: /sales/src/pages/manager/components/UserDrawer/index.tsx
  * :author: 张德志
  * :copyright: (c) 2022, Tungee
  * :date created: 2022-11-12 22:03:26
  * :last editor: 张德志
- * :date last edited: 2022-11-18 23:01:12
+ * :date last edited: 2023-09-12 22:36:46
  */
 import { Button, Form, Input, Drawer, Row, message, Select } from 'antd';
 import { getManagerAdd, getManagerUpdate } from '../../service';
@@ -13,7 +13,7 @@ import SparkMD5 from 'spark-md5';
 import { OPERATION_TYPE } from '../../constants';
 import { STATUS_TYPE } from '../../constants';
 import React, { forwardRef, useState, useImperativeHandle } from 'react';
-import { SEX_MAP } from '../../constants';
+import { SEX_MAP, ROLE_LIST } from '../../constants';
 const { Option } = Select;
 
 interface UserDrawerProps {
@@ -107,8 +107,8 @@ const UserDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
         autoComplete="off"
       >
         <Form.Item
-          label="会员名"
-          name="username"
+          label="用户名"
+          name="name"
           rules={[{ required: true, message: '会员名不能为空!' }]}
         >
           <Input placeholder="请输入会员名" />
@@ -116,7 +116,7 @@ const UserDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
 
         <Form.Item
           label="手机号"
-          name="phone"
+          name="mobile"
           rules={[
             { required: true, message: '手机号不能为空' },
             {
@@ -136,9 +136,18 @@ const UserDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
           <Input.Password placeholder="请输入密码" />
         </Form.Item>
 
-        <Form.Item label="姓别" name="sex" rules={[{ required: true, message: '姓别不能为空' }]}>
+        <Form.Item label="姓别" name="gender" rules={[{ required: true, message: '姓别不能为空' }]}>
           <Select placeholder="请选择性别">
             {SEX_MAP.map((item) => (
+              <Option key={item?.value} value={item.value}>
+                {item.label}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item label="角色" name="role" rules={[{ required: true, message: '角色不能为空' }]}>
+          <Select placeholder="请选择角色">
+            {ROLE_LIST.map((item) => (
               <Option key={item?.value} value={item.value}>
                 {item.label}
               </Option>
