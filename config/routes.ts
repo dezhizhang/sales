@@ -1,11 +1,11 @@
 ﻿/*
  * :file description:
- * :name: /xiaozhicloud-pc/config/routes.ts
+ * :name: /sales/config/routes.ts
  * :author: 张德志
  * :copyright: (c) 2022, Tungee
  * :date created: 2022-11-03 09:05:54
  * :last editor: 张德志
- * :date last edited: 2022-11-19 08:53:27
+ * :date last edited: 2023-09-16 22:37:23
  */
 export default [
   {
@@ -35,10 +35,10 @@ export default [
     component: '@/pages/manager',
   },
   {
-    name: '广告管理',
+    name: '轮播管理',
     icon: 'icon-guanggaoguanli',
-    path: '/advert',
-    component: '@/pages/advert',
+    path: '/banner',
+    component: '@/pages/banner',
   },
   {
     name: '网站建设',

@@ -1,3 +1,12 @@
+/*
+ * :file description:
+ * :name: /sales/src/pages/banner/index.tsx
+ * :author: 张德志
+ * :copyright: (c) 2023, Tungee
+ * :date created: 2023-09-09 14:24:05
+ * :last editor: 张德志
+ * :date last edited: 2023-09-16 22:38:10
+ */
 import moment from 'moment';
 import _ from 'lodash';
 import React, { useRef, useState, useEffect } from 'react';
@@ -5,9 +14,9 @@ import { Button, Table, Divider, Popconfirm, message, Image, Badge } from 'antd'
 import type { ColumnsType } from 'antd/es/table';
 import Filter from './components/Filter';
 import { empty, format } from '@/utils/index';
-import { PAGE_INDEX, PAGE_SIZE, FALLBACK } from '@/constants';
+import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE, RESPONSE_CODE, FALLBACK } from '@/constants';
 import { OPERATION_TYPE, DEFAULT_PAGINATION, WEBSITE_TYPE, STATUS_TYPE } from './constants';
-import { getWebsiteList, getWebsiteDelete } from './service';
+import { getBannerList, getWebsiteDelete } from './service';
 import type { TablePaginationConfig } from 'antd/lib/table/Table';
 import WebsiteDrawer from './components/WebsiteDrawer';
 import styles from './index.less';
@@ -15,7 +24,7 @@ import styles from './index.less';
 const Website: React.FC = () => {
   const ref = useRef();
   const [loading, setLoading] = useState<boolean>(true);
-  const [responseData, setResponseData] = useState<Website.ResponseData>();
+  const [dataSource, setDataSource] = useState<Banner.BannerType[]>([]);
   const [pagination, setPagination] = useState<TablePaginationConfig>(DEFAULT_PAGINATION);
   const [filter, setFilter] = useState<Website.RequestType>({
     title: undefined,
@@ -23,43 +32,44 @@ const Website: React.FC = () => {
     status: undefined,
   });
 
-  const fetchWebsiteList = async (params: any) => {
-    const res = await getWebsiteList(params);
-    if (res.stat) {
-      setResponseData(res?.result);
+  const fetchBannerList = async (params?: any) => {
+    const res = await getBannerList(params);
+    if (res.code === RESPONSE_CODE) {
+      const { data } = res || {};
+      setDataSource(data);
       setLoading(false);
     }
   };
 
-  const transformToParamsDefault = (params: any, pageIndex?: number, pageSize?: number) => {
-    const obj = {};
-    for (let key in params) {
-      obj[key] = undefined;
-    }
-    return {
-      pageIndex: pageIndex || PAGE_INDEX,
-      pageSize: pageSize || PAGE_SIZE,
-      filter: obj,
-    };
-  };
+  // const transformToParamsDefault = (params: any, pageIndex?: number, pageSize?: number) => {
+  //   const obj = {};
+  //   for (let key in params) {
+  //     obj[key] = undefined;
+  //   }
+  //   return {
+  //     pageIndex: pageIndex || PAGE_INDEX,
+  //     pageSize: pageSize || PAGE_SIZE,
+  //     filter: obj,
+  //   };
+  // };
 
-  const handleConfirm = async (id: string) => {
-    const res = await getWebsiteDelete({ _id: id });
-    if (res.stat) {
-      message.success(res.msg);
-      fetchWebsiteList(transformToParamsDefault(filter));
-    }
-  };
+  // const handleConfirm = async (id: string) => {
+  //   const res = await getWebsiteDelete({ _id: id });
+  //   if (res.stat) {
+  //     message.success(res.msg);
+  //     fetchWebsiteList(transformToParamsDefault(filter));
+  //   }
+  // };
 
-  const handleSubmit = () => {
-    fetchWebsiteList({ filter, pageIndex: PAGE_INDEX, pageSize: PAGE_SIZE });
-  };
+  // const handleSubmit = () => {
+  //   fetchWebsiteList({ filter, pageIndex: PAGE_INDEX, pageSize: PAGE_SIZE });
+  // };
 
-  const handleReset = () => {
-    const newFilter = transformToParamsDefault(filter);
-    setFilter(newFilter);
-    fetchWebsiteList(newFilter);
-  };
+  // const handleReset = () => {
+  //   const newFilter = transformToParamsDefault(filter);
+  //   setFilter(newFilter);
+  //   fetchWebsiteList(newFilter);
+  // };
 
   const handleChange = (key: string, value: string) => {
     const newFilter = _.cloneDeep(filter);
@@ -72,30 +82,34 @@ const Website: React.FC = () => {
     setFilter(newFilter);
   };
 
-  const handlePageChange = (pageIndex: number, pageSize: number) => {
-    setPagination({
-      ...pagination,
-      current: pageIndex,
-      pageSize,
-    });
-    fetchWebsiteList({ filter, pageIndex, pageSize });
-  };
+  // const handlePageChange = (pageIndex: number, pageSize: number) => {
+  //   setPagination({
+  //     ...pagination,
+  //     current: pageIndex,
+  //     pageSize,
+  //   });
+  //   fetchWebsiteList({ filter, pageIndex, pageSize });
+  // };
 
-  const handleSuccess = () => {
-    setFilter(transformToParamsDefault(filter));
-    setPagination({
-      ...pagination,
-      current: 1,
-      pageSize: 10,
-    });
-    fetchWebsiteList(transformToParamsDefault(filter));
-  };
+  // const handleSuccess = () => {
+  //   setFilter(transformToParamsDefault(filter));
+  //   setPagination({
+  //     ...pagination,
+  //     current: 1,
+  //     pageSize: 10,
+  //   });
+  //   fetchWebsiteList(transformToParamsDefault(filter));
+  // };
 
   useEffect(() => {
-    fetchWebsiteList(transformToParamsDefault(filter));
+    fetchBannerList();
   }, []);
 
-  const columns: ColumnsType<Website.DataType> = [
+  // useEffect(() => {
+  //   fetchWebsiteList(transformToParamsDefault(filter));
+  // }, []);
+
+  const columns: ColumnsType<Banner.BannerType> = [
     {
       title: '标题',
       dataIndex: 'title',
@@ -179,7 +193,7 @@ const Website: React.FC = () => {
       title: '操作',
       key: 'operation',
       width: '10%',
-      render: (_, record: Website.DataType) => {
+      render: (_, record: Banner.BannerType) => {
         return (
           <div>
             <a
@@ -194,7 +208,7 @@ const Website: React.FC = () => {
               okText="确定"
               placement="topLeft"
               title={'您确定要删除吗？'}
-              onConfirm={() => handleConfirm(record._id)}
+              // onConfirm={() => handleConfirm(record._id)}
               cancelText="取消"
             >
               <a type="primary" role="button">
@@ -210,10 +224,10 @@ const Website: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.filter}>
-        <Filter filter={filter} onReset={handleReset} onOk={handleSubmit} onChange={handleChange} />
+        {/* <Filter filter={filter} onReset={handleReset} onOk={handleSubmit} onChange={handleChange} /> */}
       </div>
       <div className={styles.content}>
-        <div className={styles.operation}>
+        {/* <div className={styles.operation}>
           <div className={styles.left}>
             共有
             <span>&nbsp;{responseData?.total || 0}&nbsp;</span>个网站
@@ -221,23 +235,23 @@ const Website: React.FC = () => {
           <Button type="primary" onClick={() => (ref.current as any).show(OPERATION_TYPE.ADD)}>
             新增广告
           </Button>
-        </div>
+        </div> */}
         <Table
-          pagination={{
-            ...pagination,
-            onChange: handlePageChange,
-            total: responseData?.total,
-          }}
+          // pagination={{
+          //   ...pagination,
+          //   onChange: handlePageChange,
+          //   total: responseData?.total,
+          // }}
           loading={loading}
           columns={columns}
-          dataSource={responseData?.data || []}
+          dataSource={dataSource}
         />
       </div>
-      <WebsiteDrawer
+      {/* <WebsiteDrawer
         onSuccess={handleSuccess}
         //@ts-ignore
         ref={ref}
-      />
+      /> */}
     </div>
   );
 };

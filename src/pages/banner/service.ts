@@ -1,11 +1,19 @@
-import request from '@/utils/request';
-import SERVICE_MAP from '@/utils/service';
+/*
+ * :file description:
+ * :name: /sales/src/pages/banner/service.ts
+ * :author: 张德志
+ * :copyright: (c) 2023, Tungee
+ * :date created: 2023-09-09 14:24:05
+ * :last editor: 张德志
+ * :date last edited: 2023-09-16 22:39:17
+ */
+import request, { CGI_PREFIX } from '@/utils/request';
 
 // 获取网站列表
-export async function getWebsiteList(params: any): Promise<Website.ResponseInfo> {
-  return request(SERVICE_MAP.WEBSITE_LIST, {
-    method: 'POST',
-    data: params,
+export async function getBannerList(params: any): Promise<Banner.ResponseData> {
+  return request(`${CGI_PREFIX.SALES}/banner/list`, {
+    method: 'GET',
+    params,
   });
 }
 

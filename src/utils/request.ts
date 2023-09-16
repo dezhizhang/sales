@@ -1,16 +1,19 @@
 /*
  * :file description:
- * :name: /xiaozhicloud-pc/src/utils/request.ts
+ * :name: /sales/src/utils/request.ts
  * :author: 张德志
  * :copyright: (c) 2022, Tungee
  * :date created: 2022-08-05 20:55:19
  * :last editor: 张德志
- * :date last edited: 2022-11-15 12:52:13
+ * :date last edited: 2023-09-16 22:28:41
  */
 import type { ResponseError, RequestOptionsInit } from 'umi-request';
 import { extend } from 'umi-request';
 import { notification } from 'antd';
 
+export enum CGI_PREFIX {
+  SALES = '/api/v1',
+}
 // 拓展options
 type RequestOptionsType = RequestOptionsInit & {
   // 是否关闭默认的接口拦截提示
