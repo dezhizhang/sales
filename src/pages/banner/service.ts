@@ -5,7 +5,7 @@
  * :copyright: (c) 2023, Tungee
  * :date created: 2023-09-09 14:24:05
  * :last editor: 张德志
- * :date last edited: 2023-09-17 14:50:41
+ * :date last edited: 2023-09-17 22:19:45
  */
 import request, { CGI_PREFIX } from '@/utils/request';
 
@@ -26,8 +26,8 @@ export async function createBannerInfo(params: Banner.CreateBannerType): Promise
 }
 
 //删除网站
-export async function getWebsiteDelete(params: { _id: string }): Promise<any> {
-  return request(SERVICE_MAP.WEBSITE_DELETE, {
+export async function deleteBanner(params: { id: string }): Promise<any> {
+  return request(`${CGI_PREFIX.SALES}/banner/delete`, {
     method: 'DELETE',
     data: params,
   });

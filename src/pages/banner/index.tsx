@@ -5,18 +5,17 @@
  * :copyright: (c) 2023, Tungee
  * :date created: 2023-09-09 14:24:05
  * :last editor: 张德志
- * :date last edited: 2023-09-17 14:56:29
+ * :date last edited: 2023-09-17 22:36:16
  */
 import moment from 'moment';
 import _ from 'lodash';
 import React, { useRef, useState, useEffect } from 'react';
 import { Button, Table, Divider, Popconfirm, message, Image, Badge } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import Filter from './components/Filter';
 import { empty, format } from '@/utils/index';
 import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE, RESPONSE_CODE, FALLBACK } from '@/constants';
-import { OPERATION_TYPE, DEFAULT_PAGINATION, WEBSITE_TYPE, STATUS_TYPE } from './constants';
-import { getBannerList, getWebsiteDelete } from './service';
+import { OPERATION_TYPE, DEFAULT_PAGINATION, STATUS_TYPE } from './constants';
+import { getBannerList, deleteBanner } from './service';
 import type { TablePaginationConfig } from 'antd/lib/table/Table';
 import BannerDrawer from './components/BannerDrawer';
 import styles from './index.less';
@@ -47,25 +46,25 @@ const Website: React.FC = () => {
     }
   };
 
-  // const transformToParamsDefault = (params: any, pageIndex?: number, pageSize?: number) => {
-  //   const obj = {};
-  //   for (let key in params) {
-  //     obj[key] = undefined;
-  //   }
-  //   return {
-  //     pageIndex: pageIndex || PAGE_INDEX,
-  //     pageSize: pageSize || PAGE_SIZE,
-  //     filter: obj,
-  //   };
-  // };
+  const transformToParamsDefault = (params: any, pageIndex?: number, pageSize?: number) => {
+    const obj = {};
+    for (let key in params) {
+      obj[key] = undefined;
+    }
+    return {
+      pageIndex: pageIndex || DEFAULT_PAGE_INDEX,
+      pageSize: pageSize || DEFAULT_PAGE_SIZE,
+      filter: obj,
+    };
+  };
 
-  // const handleConfirm = async (id: string) => {
-  //   const res = await getWebsiteDelete({ _id: id });
-  //   if (res.stat) {
-  //     message.success(res.msg);
-  //     fetchWebsiteList(transformToParamsDefault(filter));
-  //   }
-  // };
+  const handleConfirm = async (deleteId: string) => {
+    const res = await deleteBanner({ id: deleteId });
+    if (res.code === RESPONSE_CODE) {
+      message.success(res.msg);
+      fetchBannerList(transformToParamsDefault(filter));
+    }
+  };
 
   // const handleSubmit = () => {
   //   fetchWebsiteList({ filter, pageIndex: PAGE_INDEX, pageSize: PAGE_SIZE });
@@ -97,31 +96,27 @@ const Website: React.FC = () => {
   //   fetchWebsiteList({ filter, pageIndex, pageSize });
   // };
 
-  // const handleSuccess = () => {
-  //   setFilter(transformToParamsDefault(filter));
-  //   setPagination({
-  //     ...pagination,
-  //     current: 1,
-  //     pageSize: 10,
-  //   });
-  //   fetchWebsiteList(transformToParamsDefault(filter));
-  // };
+  const handleSuccess = () => {
+    setFilter(transformToParamsDefault(filter));
+    setPagination({
+      ...pagination,
+      current: 1,
+      pageSize: 10,
+    });
+    fetchBannerList(transformToParamsDefault(filter));
+  };
 
   useEffect(() => {
     fetchBannerList();
   }, []);
 
-  // useEffect(() => {
-  //   fetchWebsiteList(transformToParamsDefault(filter));
-  // }, []);
-
   const columns: ColumnsType<Banner.BannerType> = [
     {
-      title: '标题',
+      title: '名称',
       dataIndex: 'name',
       key: 'name',
       width: '10%',
-      render: (text) => <a>{text || '--'}</a>,
+      render: (text) => <span>{text || '--'}</span>,
     },
     {
       title: '链接',
@@ -203,7 +198,7 @@ const Website: React.FC = () => {
               okText="确定"
               placement="topLeft"
               title={'您确定要删除吗？'}
-              // onConfirm={() => handleConfirm(record._id)}
+              onConfirm={() => handleConfirm(record?.id)}
               cancelText="取消"
             >
               <a type="primary" role="button">
@@ -218,9 +213,6 @@ const Website: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.filter}>
-        {/* <Filter filter={filter} onReset={handleReset} onOk={handleSubmit} onChange={handleChange} /> */}
-      </div>
       <div className={styles.content}>
         <div className={styles.operation}>
           <div className={styles.left}>
@@ -242,7 +234,7 @@ const Website: React.FC = () => {
         />
       </div>
       <BannerDrawer
-        // onSuccess={handleSuccess}
+        onSuccess={handleSuccess}
         //@ts-ignore
         ref={ref}
       />
