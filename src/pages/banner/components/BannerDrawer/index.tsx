@@ -1,12 +1,21 @@
+/*
+ * :file description:
+ * :name: /sales/src/pages/banner/components/BannerDrawer/index.tsx
+ * :author: 张德志
+ * :copyright: (c) 2023, Tungee
+ * :date created: 2023-09-16 22:45:12
+ * :last editor: 张德志
+ * :date last edited: 2023-09-17 14:55:55
+ */
 import OSS from 'ali-oss';
-import { OSS_OBJECT } from '@/constants/index';
+import { OSS_OBJECT, PPRODUCT_NAME, RESPONSE_CODE } from '@/constants';
 import { Button, Form, Input, Drawer, Row, message, Select, Upload } from 'antd';
-import { getWebsiteAdd, getWebsiteUpdate } from '../../service';
-
+import { createBannerInfo, putBannerUpdate } from '../../service';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { forwardRef, useState, useImperativeHandle } from 'react';
 import { OPERATION_TYPE, OPERATION_TEXT, WEBSITE_TYPE, STATUS_TYPE } from '../../constants';
 import styles from './index.less';
+
 const { Option } = Select;
 
 const { TextArea } = Input;
@@ -15,62 +24,49 @@ interface UserDrawerProps {
   onSuccess: () => void;
 }
 
-const WebsiteDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
+const BannerDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
   const [form] = Form.useForm();
   const { onSuccess } = props;
   const [fileList, setFileList] = useState<any>([]);
   const [loading, setLoading] = useState(false);
-  const [record, setRecord] = useState<Website.DataType>();
-  const [operation, setOperation] = useState<String>(OPERATION_TYPE.ADD);
+  const [operate, setOperate] = useState<string>(OPERATION_TYPE.CREATE);
 
   const [visible, setVisible] = useState<boolean>();
   useImperativeHandle(ref, () => ({
-    show: (active: string, params: any) => {
+    show: (active: string, record: Banner.BannerType) => {
       setVisible(true);
-      if (active === OPERATION_TYPE.EDIT) {
-        setRecord(params);
-        form.setFieldsValue({
-          title: params.title,
-          link: params.link,
-          type: params.type,
-          status: params.status,
-          description: params.description,
-        });
+      if (record) {
+        setFileList([
+          {
+            name: record.name,
+            url: record.url,
+            status: 'done',
+          },
+        ]);
+        form.setFieldsValue(record);
       }
-      setOperation(active);
+      setOperate(active);
     },
   }));
 
-  const fetchWebsiteAdd = async (values: Website.RequestType) => {
-    const res = await getWebsiteAdd(values);
-    if (res.stat) {
-      setVisible(false);
-      form.resetFields();
-      message.success('新增网站成功');
-      onSuccess && onSuccess();
-    }
-  };
-
-  const fetchWebsiteUpdate = async (values: Website.RequestType) => {
-    const res = await getWebsiteUpdate({ _id: record?._id, ...values });
-    if (res.stat) {
-      setVisible(false);
-      form.resetFields();
-      message.success('编辑网站成功');
-      onSuccess && onSuccess();
-    }
+  const httpRequestHandler = async (values: any) => {
+    const httpRequestMethod: any = {
+      [OPERATION_TYPE.CREATE]: createBannerInfo,
+      [OPERATION_TYPE.EDITOR]: putBannerUpdate,
+    };
+    return await httpRequestMethod[operate](values);
   };
 
   const handleFinish = async () => {
     await form.validateFields();
     const values = await form.getFieldsValue();
     values.url = fileList[0]?.url;
-    if (operation === OPERATION_TYPE.ADD) {
-      fetchWebsiteAdd(values);
-      return;
-    }
-    if (operation === OPERATION_TYPE.EDIT) {
-      fetchWebsiteUpdate(values);
+    const res = await httpRequestHandler(values);
+    if (res?.code === RESPONSE_CODE) {
+      setVisible(false);
+      setFileList([]);
+      onSuccess?.();
+      message.success(`${OPERATION_TEXT[operate]}成功`);
     }
   };
 
@@ -100,7 +96,7 @@ const WebsiteDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
     const extension = fileType?.split('/')?.[1];
     const dateTime = new Date().getTime();
     const client = await loadClient();
-    const result = await client.put(`/website/${dateTime}.${extension}`, file);
+    const result = await client.put(`/${PPRODUCT_NAME}/bannner/${dateTime}.${extension}`, file);
     const uploadObj = {
       uid: dateTime,
       name: result?.name?.split('/')[1],
@@ -110,6 +106,8 @@ const WebsiteDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
     setLoading(false);
     setFileList([uploadObj]);
   };
+
+  console.log('operate', operate);
 
   return (
     <Drawer
@@ -125,8 +123,8 @@ const WebsiteDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
         </Row>
       }
       width={500}
-      title={OPERATION_TEXT[operation]}
-      visible={visible}
+      title={OPERATION_TEXT[operate]}
+      open={visible}
       onClose={() => setVisible(false)}
     >
       <Form
@@ -136,7 +134,7 @@ const WebsiteDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
         onFinish={handleFinish}
         autoComplete="off"
       >
-        <Form.Item label="标题" name="title" rules={[{ required: true, message: '标题不能为空!' }]}>
+        <Form.Item label="标题" name="name" rules={[{ required: true, message: '标题不能为空!' }]}>
           <Input placeholder="请输入标题" />
         </Form.Item>
 
@@ -193,4 +191,4 @@ const WebsiteDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
   );
 });
 
-export default WebsiteDrawer;
+export default BannerDrawer;

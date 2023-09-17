@@ -5,7 +5,7 @@
  * :copyright: (c) 2023, Tungee
  * :date created: 2023-09-09 14:24:05
  * :last editor: 张德志
- * :date last edited: 2023-09-16 22:39:17
+ * :date last edited: 2023-09-17 14:50:41
  */
 import request, { CGI_PREFIX } from '@/utils/request';
 
@@ -18,8 +18,8 @@ export async function getBannerList(params: any): Promise<Banner.ResponseData> {
 }
 
 // 新增网站
-export async function getWebsiteAdd(params: Website.RequestType): Promise<any> {
-  return request(SERVICE_MAP.WEBSITE_ADD, {
+export async function createBannerInfo(params: Banner.CreateBannerType): Promise<any> {
+  return request(`${CGI_PREFIX.SALES}/banner/add`, {
     method: 'POST',
     data: params,
   });
@@ -34,8 +34,8 @@ export async function getWebsiteDelete(params: { _id: string }): Promise<any> {
 }
 
 // 编辑网站
-export async function getWebsiteUpdate(params: any): Promise<any> {
-  return request(SERVICE_MAP.WEBSITE_UPDATE, {
+export async function putBannerUpdate(params: any): Promise<any> {
+  return request(`${CGI_PREFIX.SALES}/banner/update`, {
     method: 'PUT',
     data: params,
   });

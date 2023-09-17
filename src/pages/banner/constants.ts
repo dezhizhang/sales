@@ -1,12 +1,22 @@
+/*
+ * :file description:
+ * :name: /sales/src/pages/banner/constants.ts
+ * :author: 张德志
+ * :copyright: (c) 2023, Tungee
+ * :date created: 2023-09-16 22:45:12
+ * :last editor: 张德志
+ * :date last edited: 2023-09-17 09:48:47
+ */
+
 // 操作类型
 export const OPERATION_TYPE = {
-  ADD: 'ADD',
-  EDIT: 'EDIT',
+  CREATE: 'CREATE',
+  EDITOR: 'EDITOR',
 };
 
-export const OPERATION_TEXT = {
-  [OPERATION_TYPE.ADD]: '新增网站',
-  [OPERATION_TYPE.EDIT]: '编辑网站',
+export const OPERATION_TEXT: any = {
+  [OPERATION_TYPE.CREATE]: '新增轮播图',
+  [OPERATION_TYPE.EDITOR]: '编辑轮播图',
 };
 
 export const WEBSITE_TYPE = [

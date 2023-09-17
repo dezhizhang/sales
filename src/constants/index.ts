@@ -5,8 +5,11 @@
  * :copyright: (c) 2023, Tungee
  * :date created: 2023-09-09 14:24:05
  * :last editor: 张德志
- * :date last edited: 2023-09-16 22:33:29
+ * :date last edited: 2023-09-17 09:48:11
  */
+
+export const PPRODUCT_NAME = 'sales';
+
 // 默认起始页
 export const DEFAULT_PAGE_INDEX = 1;
 export const DEFAULT_PAGE_SIZE = 10;

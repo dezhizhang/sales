@@ -5,7 +5,7 @@
  * :copyright: (c) 2023, Tungee
  * :date created: 2023-09-09 14:24:05
  * :last editor: 张德志
- * :date last edited: 2023-09-16 22:38:10
+ * :date last edited: 2023-09-17 14:56:29
  */
 import moment from 'moment';
 import _ from 'lodash';
@@ -18,7 +18,7 @@ import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE, RESPONSE_CODE, FALLBACK } from '
 import { OPERATION_TYPE, DEFAULT_PAGINATION, WEBSITE_TYPE, STATUS_TYPE } from './constants';
 import { getBannerList, getWebsiteDelete } from './service';
 import type { TablePaginationConfig } from 'antd/lib/table/Table';
-import WebsiteDrawer from './components/WebsiteDrawer';
+import BannerDrawer from './components/BannerDrawer';
 import styles from './index.less';
 
 const Website: React.FC = () => {
@@ -35,8 +35,14 @@ const Website: React.FC = () => {
   const fetchBannerList = async (params?: any) => {
     const res = await getBannerList(params);
     if (res.code === RESPONSE_CODE) {
-      const { data } = res || {};
+      const { data, total } = res || {};
       setDataSource(data);
+      setPagination((old) => {
+        return {
+          ...old,
+          total,
+        };
+      });
       setLoading(false);
     }
   };
@@ -112,8 +118,8 @@ const Website: React.FC = () => {
   const columns: ColumnsType<Banner.BannerType> = [
     {
       title: '标题',
-      dataIndex: 'title',
-      key: 'title',
+      dataIndex: 'name',
+      key: 'name',
       width: '10%',
       render: (text) => <a>{text || '--'}</a>,
     },
@@ -139,17 +145,6 @@ const Website: React.FC = () => {
         return <Image width={64} height={32} src={text} fallback={FALLBACK} />;
       },
     },
-    {
-      title: '类型',
-      dataIndex: 'type',
-      width: '8%',
-      key: 'type',
-      render: (text) => {
-        const typeItem = WEBSITE_TYPE.find((item) => item.value === text);
-        return <span>{typeItem?.label || empty()} </span>;
-      },
-    },
-
     {
       title: '描述',
       key: 'description',
@@ -199,7 +194,7 @@ const Website: React.FC = () => {
             <a
               type="primary"
               role="button"
-              onClick={() => (ref.current as any).show(OPERATION_TYPE.EDIT, record)}
+              onClick={() => (ref.current as any).show(OPERATION_TYPE.EDITOR, record)}
             >
               编辑
             </a>
@@ -227,31 +222,30 @@ const Website: React.FC = () => {
         {/* <Filter filter={filter} onReset={handleReset} onOk={handleSubmit} onChange={handleChange} /> */}
       </div>
       <div className={styles.content}>
-        {/* <div className={styles.operation}>
+        <div className={styles.operation}>
           <div className={styles.left}>
             共有
-            <span>&nbsp;{responseData?.total || 0}&nbsp;</span>个网站
+            <span>&nbsp;{pagination?.total || 0}&nbsp;</span>个轮播图
           </div>
-          <Button type="primary" onClick={() => (ref.current as any).show(OPERATION_TYPE.ADD)}>
-            新增广告
+          <Button type="primary" onClick={() => (ref.current as any).show(OPERATION_TYPE.CREATE)}>
+            新增轮播图
           </Button>
-        </div> */}
+        </div>
         <Table
-          // pagination={{
-          //   ...pagination,
-          //   onChange: handlePageChange,
-          //   total: responseData?.total,
-          // }}
+          pagination={{
+            ...pagination,
+            // onChange: handlePageChange,
+          }}
           loading={loading}
           columns={columns}
           dataSource={dataSource}
         />
       </div>
-      {/* <WebsiteDrawer
-        onSuccess={handleSuccess}
+      <BannerDrawer
+        // onSuccess={handleSuccess}
         //@ts-ignore
         ref={ref}
-      /> */}
+      />
     </div>
   );
 };
