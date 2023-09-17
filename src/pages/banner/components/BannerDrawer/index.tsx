@@ -5,7 +5,7 @@
  * :copyright: (c) 2023, Tungee
  * :date created: 2023-09-16 22:45:12
  * :last editor: 张德志
- * :date last edited: 2023-09-17 14:55:55
+ * :date last edited: 2023-09-17 15:13:14
  */
 import OSS from 'ali-oss';
 import { OSS_OBJECT, PPRODUCT_NAME, RESPONSE_CODE } from '@/constants';
@@ -134,10 +134,12 @@ const BannerDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
         onFinish={handleFinish}
         autoComplete="off"
       >
-        <Form.Item label="标题" name="name" rules={[{ required: true, message: '标题不能为空!' }]}>
-          <Input placeholder="请输入标题" />
+        {operate === OPERATION_TYPE.EDITOR && (
+          <Form.Item style={{ display: 'none' }} label="轮播图id" name="id" />
+        )}
+        <Form.Item label="名称" name="name" rules={[{ required: true, message: '名称不能为空!' }]}>
+          <Input placeholder="请输入名称" />
         </Form.Item>
-
         <Form.Item label="链接" name="link" rules={[{ required: true, message: '链接不能为空' }]}>
           <Input placeholder="请输入链接" />
         </Form.Item>
@@ -158,7 +160,6 @@ const BannerDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
             )}
           </Upload>
         </Form.Item>
-
         <Form.Item
           label="位置"
           name="position"
