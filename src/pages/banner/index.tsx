@@ -5,7 +5,7 @@
  * :copyright: (c) 2023, Tungee
  * :date created: 2023-09-09 14:24:05
  * :last editor: 张德志
- * :date last edited: 2023-09-17 22:36:16
+ * :date last edited: 2023-09-17 22:39:51
  */
 import moment from 'moment';
 import _ from 'lodash';
@@ -64,27 +64,6 @@ const Website: React.FC = () => {
       message.success(res.msg);
       fetchBannerList(transformToParamsDefault(filter));
     }
-  };
-
-  // const handleSubmit = () => {
-  //   fetchWebsiteList({ filter, pageIndex: PAGE_INDEX, pageSize: PAGE_SIZE });
-  // };
-
-  // const handleReset = () => {
-  //   const newFilter = transformToParamsDefault(filter);
-  //   setFilter(newFilter);
-  //   fetchWebsiteList(newFilter);
-  // };
-
-  const handleChange = (key: string, value: string) => {
-    const newFilter = _.cloneDeep(filter);
-    if (key === 'title') {
-      newFilter[key] = value ? value : undefined;
-    } else {
-      newFilter[key] = value;
-    }
-    console.log('newFilter', newFilter);
-    setFilter(newFilter);
   };
 
   // const handlePageChange = (pageIndex: number, pageSize: number) => {
