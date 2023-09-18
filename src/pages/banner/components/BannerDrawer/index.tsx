@@ -5,7 +5,7 @@
  * :copyright: (c) 2023, Tungee
  * :date created: 2023-09-16 22:45:12
  * :last editor: 张德志
- * :date last edited: 2023-09-17 15:13:14
+ * :date last edited: 2023-09-18 09:25:46
  */
 import OSS from 'ali-oss';
 import { OSS_OBJECT, PPRODUCT_NAME, RESPONSE_CODE } from '@/constants';
@@ -66,6 +66,7 @@ const BannerDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
       setVisible(false);
       setFileList([]);
       onSuccess?.();
+      form.resetFields();
       message.success(`${OPERATION_TEXT[operate]}成功`);
     }
   };
@@ -88,6 +89,11 @@ const BannerDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
 
   const loadClient = async () => {
     return new OSS(OSS_OBJECT);
+  };
+
+  const handleClose = () => {
+    form.resetFields();
+    setVisible(false);
   };
 
   const handleRequest = async ({ file }: any) => {
@@ -114,7 +120,7 @@ const BannerDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
       className={styles.container}
       footer={
         <Row justify="end">
-          <Button onClick={() => setVisible(false)} style={{ marginRight: 16 }}>
+          <Button onClick={handleClose} style={{ marginRight: 16 }}>
             取消
           </Button>
           <Button onClick={handleFinish} type="primary">
@@ -125,7 +131,7 @@ const BannerDrawer: React.FC<UserDrawerProps> = forwardRef((props, ref) => {
       width={500}
       title={OPERATION_TEXT[operate]}
       open={visible}
-      onClose={() => setVisible(false)}
+      onClose={handleClose}
     >
       <Form
         form={form}

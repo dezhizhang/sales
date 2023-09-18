@@ -5,7 +5,7 @@
  * :copyright: (c) 2023, Tungee
  * :date created: 2023-09-09 14:24:05
  * :last editor: 张德志
- * :date last edited: 2023-09-17 22:39:51
+ * :date last edited: 2023-09-18 09:24:14
  */
 import moment from 'moment';
 import _ from 'lodash';
@@ -13,7 +13,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Button, Table, Divider, Popconfirm, message, Image, Badge } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { empty, format } from '@/utils/index';
-import { DEFAULT_PAGE_INDEX, DEFAULT_PAGE_SIZE, RESPONSE_CODE, FALLBACK } from '@/constants';
+import { transformToParams } from '@/utils';
+import { RESPONSE_CODE, FALLBACK, DEFAULT_PAGE_INDEX } from '@/constants';
 import { OPERATION_TYPE, DEFAULT_PAGINATION, STATUS_TYPE } from './constants';
 import { getBannerList, deleteBanner } from './service';
 import type { TablePaginationConfig } from 'antd/lib/table/Table';
@@ -32,6 +33,7 @@ const Website: React.FC = () => {
   });
 
   const fetchBannerList = async (params?: any) => {
+    setLoading(true);
     const res = await getBannerList(params);
     if (res.code === RESPONSE_CODE) {
       const { data, total } = res || {};
@@ -46,47 +48,40 @@ const Website: React.FC = () => {
     }
   };
 
-  const transformToParamsDefault = (params: any, pageIndex?: number, pageSize?: number) => {
-    const obj = {};
-    for (let key in params) {
-      obj[key] = undefined;
-    }
-    return {
-      pageIndex: pageIndex || DEFAULT_PAGE_INDEX,
-      pageSize: pageSize || DEFAULT_PAGE_SIZE,
-      filter: obj,
-    };
-  };
-
   const handleConfirm = async (deleteId: string) => {
     const res = await deleteBanner({ id: deleteId });
     if (res.code === RESPONSE_CODE) {
       message.success(res.msg);
-      fetchBannerList(transformToParamsDefault(filter));
+      fetchBannerList(transformToParams(filter));
     }
   };
 
-  // const handlePageChange = (pageIndex: number, pageSize: number) => {
-  //   setPagination({
-  //     ...pagination,
-  //     current: pageIndex,
-  //     pageSize,
-  //   });
-  //   fetchWebsiteList({ filter, pageIndex, pageSize });
-  // };
+  const handlePageChange = (current: number, pageSize: number) => {
+    if (pageSize != pagination.pageSize) {
+      setPagination((old) => {
+        return { ...old, current: DEFAULT_PAGE_INDEX, pageSize };
+      });
+      fetchBannerList(transformToParams({ pageIndex: DEFAULT_PAGE_INDEX, pageSize }));
+      return;
+    }
+    setPagination((old) => {
+      return { ...old, current: current, pageSize };
+    });
+    fetchBannerList(transformToParams({ pageIndex: current, pageSize }));
+  };
 
   const handleSuccess = () => {
-    setFilter(transformToParamsDefault(filter));
+    setFilter(transformToParams(filter));
     setPagination({
       ...pagination,
       current: 1,
       pageSize: 10,
     });
-    fetchBannerList(transformToParamsDefault(filter));
+    fetchBannerList(transformToParams(filter));
   };
 
   useEffect(() => {
-    fetchBannerList();
+    fetchBannerList(transformToParams());
   }, []);
 
   const columns: ColumnsType<Banner.BannerType> = [
@@ -205,7 +200,7 @@ const Website: React.FC = () => {
         <Table
           pagination={{
             ...pagination,
-            // onChange: handlePageChange,
+            onChange: handlePageChange,
           }}
           loading={loading}
           columns={columns}
